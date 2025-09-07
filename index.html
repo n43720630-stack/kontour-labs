@@ -7,47 +7,38 @@
   <meta name="description" content="Kontour Labs - professional 3D printing studio. We craft high-quality parts in PLA, PETG, and ASA. Email us your brief to start." />
   <meta name="theme-color" content="#0b0f19" />
   <style>
-    /* ===== Brand System: Futuristic / Minimal ===== */
     :root{
-      --bg:#0b0f19;            /* deep navy */
-      --panel:#0e1424;         /* panel */
-      --text:#e6ecff;          /* near-white */
-      --muted:#98a3c7;         /* slate */
-      --line:#1a2237;          /* hairline */
-      --a1:#00C2FF;            /* cyan tech */
-      --a2:#FF9F43;            /* amber proto */
-      --a3:#7A88FF;            /* indigo lab */
+      --bg:#0b0f19; --panel:#0e1424; --text:#e6ecff; --muted:#98a3c7; --line:#1a2237;
+      --a1:#00C2FF; --a2:#FF9F43; --a3:#7A88FF;
       --glow:0 12px 40px rgba(107,182,255,.28);
       --radius:18px; --radius-sm:12px; --shadow:0 20px 60px rgba(2,8,23,.45);
       --container:1180px;
     }
-    *{box-sizing:border-box}
-    html,body{height:100%}
+    *{box-sizing:border-box} html,body{height:100%}
     body{
       margin:0; background:radial-gradient(1200px 600px at 85% -10%, rgba(122,136,255,.22), transparent 55%), radial-gradient(800px 400px at 10% 10%, rgba(0,194,255,.18), transparent 60%), var(--bg);
-      color:var(--text);
-      font-family:Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-      line-height:1.6;
-      overflow-x:hidden;
+      color:var(--text); font-family:Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; line-height:1.6; overflow-x:hidden;
     }
     a{color:inherit; text-decoration:none}
     img{max-width:100%; display:block}
     .container{max-width:var(--container); margin-inline:auto; padding:0 20px}
 
-    /* ===== Minimal Nav ===== */
     header{position:sticky; top:0; z-index:60; backdrop-filter:saturate(160%) blur(10px); background:rgba(11,15,25,.55); border-bottom:1px solid var(--line)}
     .nav{display:flex; align-items:center; justify-content:space-between; gap:18px; padding:14px 0}
-    .brand{display:flex; align-items:center; gap:.8rem; font-weight:900; letter-spacing:.3px}
-    .logo{width:36px; height:36px; border-radius:12px; display:grid; place-items:center; color:#06101f; box-shadow:var(--glow); background:none; padding:0}
+    .brand{display:flex; align-items:center; gap:.7rem; font-weight:900; letter-spacing:.2px}
+
+    /* Logo */
+    .logo-icon{width:36px; height:36px; display:block; border-radius:12px; box-shadow:var(--glow)}
+    .logo-text{font-weight:900; font-size:1.25rem; background:linear-gradient(90deg,var(--a1),var(--a3)); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; line-height:1}
+    .logo-sub{font-weight:800; font-size:1.1rem; color:var(--muted); line-height:1}
+
     .nav a{color:#eaf1ff; font-weight:700; opacity:.9}
     .nav a:hover{opacity:1}
 
-    /* ===== Page router ===== */
     main{min-height:70vh}
     [data-page]{display:none}
     [data-page].active{display:block}
 
-    /* ===== Hero (segmented headline) ===== */
     .hero{padding:90px 0 36px}
     .hero-wrap{display:grid; grid-template-columns:1.08fr .92fr; gap:38px; align-items:center}
     h1{margin:0 0 12px; font-size:clamp(2.2rem, 6vw, 6rem); font-weight:900; line-height:1.02; letter-spacing:-.02em}
@@ -60,74 +51,46 @@
 
     .panel{background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.02)); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); padding:20px}
 
-    /* Sections */
     section{padding:68px 0}
     .grid-2{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:20px}
     .grid-3{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:20px}
-
     .card{background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02)); border:1px solid var(--line); border-radius:var(--radius); padding:22px; box-shadow:var(--shadow)}
     .card h3{margin:0 0 6px}
     .muted{color:var(--muted)}
 
-    /* ===== Materials chips (glow tooltip below; no box) ===== */
+    /* Chips with glow tooltips (no box) */
     .chips{display:flex; flex-wrap:wrap; gap:10px; margin-top:10px}
-    .chip{
-      padding:.45rem .75rem;
-      border-radius:999px;
-      font-weight:800;
-      letter-spacing:.2px;
-      border:1px solid var(--line);
-      background:rgba(255,255,255,.04);
-      position:relative; /* for tooltip positioning */
-    }
+    .chip{padding:.45rem .75rem; border-radius:999px; font-weight:800; letter-spacing:.2px; border:1px solid var(--line); background:rgba(255,255,255,.04); position:relative}
     .chip[data-tip]::after{
-      content:attr(data-tip);
-      position:absolute;
-      left:50%;
-      top:calc(100% + 6px);
-      transform:translate(-50%, 4px);
-      white-space:nowrap;
-      color:#eaf1ff;
-      background:transparent;
-      border:0;
-      padding:0;
-      font-weight:800;
-      font-size:.85rem;
-      letter-spacing:.02em;
-      opacity:0;
-      pointer-events:none;
-      text-shadow:
-        0 0 10px rgba(0,194,255,.65),
-        0 0 18px rgba(122,136,255,.45);
+      content:attr(data-tip); position:absolute; left:50%; top:calc(100% + 6px); transform:translate(-50%, 4px);
+      white-space:nowrap; color:#eaf1ff; background:transparent; border:0; padding:0; font-weight:800; font-size:.85rem; letter-spacing:.02em; opacity:0; pointer-events:none;
+      text-shadow:0 0 10px rgba(0,194,255,.65), 0 0 18px rgba(122,136,255,.45);
       transition:opacity .18s ease, transform .18s ease;
     }
-    .chip[data-tip]:hover::after{
-      opacity:1;
-      transform:translate(-50%, 0);
-    }
+    .chip[data-tip]:hover::after{opacity:1; transform:translate(-50%, 0)}
 
-    /* Reveal on scroll */
     .reveal{opacity:0; transform:translateY(16px); transition:opacity .5s ease, transform .5s ease}
     .reveal.in{opacity:1; transform:none}
 
-    /* Email page */
     .center{display:grid; place-items:center; text-align:center; min-height:60vh}
     .big{font-size:clamp(1.6rem, 3.5vw, 3rem); font-weight:900}
     .cta{display:inline-flex; align-items:center; gap:.6rem; margin-top:14px; padding:.9rem 1.2rem; border-radius:999px; background:linear-gradient(90deg,var(--a1),var(--a3)); color:#06101f; font-weight:900; box-shadow:var(--glow)}
     .copy{display:inline-flex; align-items:center; gap:.6rem; margin-left:8px; padding:.85rem 1.1rem; border-radius:999px; background:#0f1629; border:1px solid var(--line); color:#eaf1ff; font-weight:800}
 
-    /* Footer */
     footer{border-top:1px solid var(--line); padding:20px 0; color:#98a3c7}
-
-    /* Cursor blob */
     .blob{position:fixed; width:320px; height:320px; border-radius:50%; pointer-events:none; left:-160px; top:-160px; filter:blur(40px); mix-blend-mode:screen; opacity:.6; z-index:0;
       background:radial-gradient(circle at 50% 50%, rgba(122,136,255,.28), rgba(0,194,255,.25) 45%, transparent 65%);
     }
 
-    /* Responsive */
+    /* === Live Print Demo (canvas) === */
+    #printDemo{padding:16px}
+    #printCanvas{width:100%; height:360px; display:block; border-radius:12px}
+    .tiny{font-size:.85rem; color:var(--muted); margin-top:8px}
+
     @media (max-width: 980px){
       .hero-wrap{grid-template-columns:1fr}
       .grid-2,.grid-3{grid-template-columns:1fr}
+      #printCanvas{height:300px}
     }
   </style>
 </head>
@@ -135,27 +98,23 @@
   <div class="blob" aria-hidden="true"></div>
   <header>
     <div class="container nav">
-      <a href="#home" class="brand">
-        <span class="logo" aria-hidden="true" style="background:none;padding:0">
-          <!-- KL Monogram -->
-          <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36" aria-hidden="true">
-            <defs>
-              <linearGradient id="kl-g" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0" stop-color="#00C2FF"/>
-                <stop offset="1" stop-color="#7A88FF"/>
-              </linearGradient>
-            </defs>
-            <rect width="36" height="36" rx="12" fill="url(#kl-g)"/>
-            <path d="M10 9v18h4v-6.5l5 6.5h5l-6.3-8 6.3-10h-5l-5 8v-8h-4z" fill="#06101f"/>
-          </svg>
-        </span>
-        <span>Kontour Labs</span>
+      <a href="#home" class="brand" aria-label="Kontour Labs — Home">
+        <!-- Logo: Mini 3D Printer -->
+        <svg class="logo-icon" viewBox="0 0 100 100" aria-hidden="true" focusable="false">
+          <defs><linearGradient id="knt-g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#00C2FF"/><stop offset="1" stop-color="#7A88FF"/></linearGradient></defs>
+          <rect x="16" y="14" width="68" height="72" rx="10" ry="10" fill="none" stroke="url(#knt-g)" stroke-width="5"/>
+          <line x1="26" y1="34" x2="74" y2="34" stroke="url(#knt-g)" stroke-width="5" stroke-linecap="round"/>
+          <line x1="28" y1="36" x2="28" y2="70" stroke="url(#knt-g)" stroke-width="4" stroke-linecap="round" opacity=".9"/>
+          <line x1="72" y1="36" x2="72" y2="70" stroke="url(#knt-g)" stroke-width="4" stroke-linecap="round" opacity=".9"/>
+          <rect x="44" y="29" width="12" height="16" rx="3" fill="none" stroke="url(#knt-g)" stroke-width="4"/>
+          <path d="M50 45 l-4 8 h8 z" fill="none" stroke="url(#knt-g)" stroke-linejoin="round" stroke-width="3"/>
+          <line x1="50" y1="53" x2="50" y2="64" stroke="url(#knt-g)" stroke-width="3" stroke-linecap="round" />
+          <rect x="26" y="70" width="48" height="10" rx="2" fill="none" stroke="url(#knt-g)" stroke-width="4"/>
+        </svg>
+        <span class="logo-text">Kontour</span><span class="logo-sub">Labs</span>
       </a>
       <nav style="display:flex; gap:14px; align-items:center">
-        <a href="#home">Home</a>
-        <a href="#home-what">What we do</a>
-        <a href="#home-who">Who we are</a>
-        <a href="#email">Email us</a>
+        <a href="#home">Home</a><a href="#home-what">What we do</a><a href="#home-who">Who we are</a><a href="#email">Email us</a>
       </nav>
     </div>
   </header>
@@ -180,7 +139,15 @@
             </div>
           </div>
         </div>
-        <!-- Right column intentionally left empty -->
+
+        <!-- RIGHT: Live print formation demo -->
+        <div class="reveal">
+          <div class="panel" id="printDemo" aria-label="Live 3D print formation demo">
+            <canvas id="printCanvas"></canvas>
+           <p></p>
+          </div>
+        </div>
+
       </div>
     </section>
 
@@ -216,13 +183,8 @@
 
     <section class="container" data-page id="home-cta" style="padding-top:20px; padding-bottom:70px">
       <div class="panel reveal" style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap">
-        <div>
-          <div class="big">Ready when you are.</div>
-          <div class="muted">Email us your brief - we’ll handle the rest.</div>
-        </div>
-        <div>
-          <a class="cta" href="#email">Email us</a>
-        </div>
+        <div><div class="big">Ready when you are.</div><div class="muted">Email us your brief - we’ll handle the rest.</div></div>
+        <div><a class="cta" href="#email">Email us</a></div>
       </div>
     </section>
 
@@ -243,9 +205,7 @@
 
   <footer>
     <div class="container" style="display:flex; align-items:center; justify-content:center; gap:16px; flex-wrap:wrap">
-      <a href="#home">Home</a>
-      <span>•</span>
-      <a href="#email">Email us</a>
+      <a href="#home">Home</a><span>•</span><a href="#email">Email us</a>
     </div>
   </footer>
 
@@ -274,18 +234,13 @@
     const blob=document.querySelector('.blob');
     let bx=0, by=0, tx=0, ty=0;
     window.addEventListener('pointermove', e=>{ tx=e.clientX; ty=e.clientY; });
-    function tick(){
-      bx+= (tx - bx) * 0.08;
-      by+= (ty - by) * 0.08;
-      blob.style.transform=`translate3d(${bx}px, ${by}px, 0)`;
-      requestAnimationFrame(tick);
-    }
-    tick();
+    function tickBlob(){ bx+= (tx - bx) * 0.08; by+= (ty - by) * 0.08; blob.style.transform=`translate3d(${bx}px, ${by}px, 0)`; requestAnimationFrame(tickBlob); }
+    tickBlob();
 
     // ===== Segmented headline variants (click to cycle)
     function makeCycler(id){
       const el=document.getElementById(id);
-      if(!el) return; 
+      if(!el) return;
       const variants=JSON.parse(el.getAttribute('data-variants')||'[]');
       let i=0; el.addEventListener('click', ()=>{ i=(i+1)%variants.length; el.textContent=variants[i]; });
     }
@@ -303,6 +258,178 @@
         });
       });
     }
+
+    // ===== Live Print Formation (Canvas)
+    (function(){
+      const canvas=document.getElementById('printCanvas');
+      if(!canvas) return;
+      const ctx=canvas.getContext('2d');
+
+      let playing=true;
+      let angle=0.35;         // "view" angle (affects ellipse squish & light)
+      let drag=false, startX=0, startAngle=angle;
+      let progress=0;         // 0..1 progress of print
+      let t0=performance.now();
+
+      function resize(){
+        const dpr=window.devicePixelRatio||1;
+        const r=canvas.getBoundingClientRect();
+        canvas.width=r.width*dpr; canvas.height=r.height*dpr;
+        ctx.setTransform(dpr,0,0,dpr,0,0);
+      }
+      resize(); addEventListener('resize', resize);
+
+      // Simple vase profile (surface of revolution): radius over height
+      function radiusAt(t){ // t in [0,1]
+        // base and lip slimmer, belly wider
+        return 22 + 56*Math.sin(Math.PI*t)**1.1;
+      }
+
+      function draw(){
+        const {width:w,height:h} = canvas.getBoundingClientRect();
+        ctx.clearRect(0,0,w,h);
+
+        // Panel backdrop glow
+        const g=ctx.createLinearGradient(0,0,w,h);
+        g.addColorStop(0,'rgba(122,136,255,0.10)');
+        g.addColorStop(1,'rgba(0,194,255,0.06)');
+        ctx.fillStyle=g; ctx.fillRect(0,0,w,h);
+
+        // Print bed
+        const bedY = h - 28, bedH=10, bedW = Math.min(320, w*0.75);
+        const bedX = (w-bedW)/2;
+        ctx.fillStyle='rgba(200,220,255,0.06)';
+        ctx.fillRect(bedX, bedY, bedW, bedH);
+        ctx.strokeStyle='rgba(180,200,255,0.15)';
+        ctx.strokeRect(bedX, bedY, bedW, bedH);
+
+        // Object params
+        const H = Math.min(260, h - 80);    // height available for print
+        const topY = bedY - H - 8;
+        const cx = w/2;
+        const layer = 3;                    // layer height px
+        const squish = .18 + .10*Math.cos(angle);  // ellipse vertical radius ratio
+
+        // Silhouette ghost (future shape)
+        ctx.beginPath();
+        for(let t=0;t<=1.001;t+=0.01){
+          const rx = radiusAt(t);
+          const y = topY + t*H;
+          if(t===0) ctx.moveTo(cx-rx,y);
+          ctx.lineTo(cx-rx,y);
+        }
+        for(let t=1;t>=0;t-=0.01){
+          const rx = radiusAt(t);
+          const y = topY + t*H;
+          ctx.lineTo(cx+rx,y);
+        }
+        ctx.closePath();
+        ctx.strokeStyle='rgba(180,210,255,0.08)';
+        ctx.lineWidth=1; ctx.stroke();
+
+        // Printed height
+        const printedH = H * Math.min(progress,1);
+        const currentY = topY + printedH;
+
+        // Layers
+        for(let y=topY; y<=currentY; y+=layer){
+          const t = (y-topY)/H; const rx = radiusAt(t);
+          const ry = Math.max(2, rx*squish);
+
+          // fill (slight glow)
+          const lg = ctx.createLinearGradient(cx-rx,y, cx+rx,y);
+          lg.addColorStop(0, 'rgba(0,194,255,0.10)');
+          lg.addColorStop(.5, 'rgba(170,190,255,0.12)');
+          lg.addColorStop(1, 'rgba(122,136,255,0.10)');
+          ctx.fillStyle = lg;
+
+          ctx.beginPath();
+          ctx.ellipse(cx, y, rx, ry, 0, 0, Math.PI*2);
+          ctx.fill();
+
+          // layer line
+          ctx.strokeStyle='rgba(120,200,255,0.25)';
+          ctx.lineWidth=1;
+          ctx.stroke();
+        }
+
+        // Nozzle + filament at current layer
+        if(progress<1){
+          const t = (currentY-topY)/H;
+          const rx = radiusAt(t)*0.88;
+          const ry = Math.max(2, rx*squish);
+          const time = performance.now()/1000;
+          const nx = cx + Math.sin(time*2.2)*rx;
+          const ny = currentY;
+
+          // filament drop
+          ctx.strokeStyle='rgba(0,194,255,0.6)';
+          ctx.lineWidth=2; ctx.beginPath();
+          ctx.moveTo(nx, ny-10);
+          ctx.lineTo(nx, ny-ry);
+          ctx.stroke();
+
+          // nozzle head
+          ctx.fillStyle='rgba(200,230,255,0.12)';
+          ctx.strokeStyle='rgba(140,200,255,0.6)';
+          ctx.lineWidth=2;
+          ctx.beginPath();
+          ctx.roundRect(nx-10, ny-22, 20, 12, 4);
+          ctx.fill(); ctx.stroke();
+
+          // little tip
+          ctx.beginPath();
+          ctx.moveTo(nx-4, ny-10); ctx.lineTo(nx+4, ny-10); ctx.lineTo(nx, ny-4); ctx.closePath();
+          ctx.fillStyle='rgba(140,200,255,0.5)'; ctx.fill();
+        }
+
+        // Soft vignette
+        const vg = ctx.createRadialGradient(w/2,h/2,0,w/2,h/2,Math.max(w,h)/1.2);
+        vg.addColorStop(0,'rgba(0,0,0,0)');
+        vg.addColorStop(1,'rgba(0,0,0,0.25)');
+        ctx.fillStyle=vg; ctx.fillRect(0,0,w,h);
+      }
+
+      function step(now){
+        const dt = Math.min(1, (now - t0)/1000); t0 = now;
+        if(playing){
+          // speed in %/s
+          const speed = 0.22; // 22% per second
+          progress += speed*dt;
+          if(progress>=1.08){ // small overshoot then reset
+            progress = 0;
+          }
+        }
+        draw();
+        requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+
+      // Interactions
+      canvas.addEventListener('click', ()=>{ playing=!playing; });
+      canvas.addEventListener('pointerdown', e=>{ drag=true; startX=e.clientX; startAngle=angle; canvas.setPointerCapture(e.pointerId); });
+      canvas.addEventListener('pointermove', e=>{
+        if(!drag) return;
+        const dx = e.clientX - startX;
+        angle = Math.max(-0.6, Math.min(0.9, startAngle + dx/400));
+      });
+      canvas.addEventListener('pointerup', e=>{ drag=false; canvas.releasePointerCapture(e.pointerId); });
+
+      // Resize observer to keep crisp
+      new ResizeObserver(resize).observe(canvas);
+    })();
+  </script>
+
+  <script>
+  // Забрана на десен клик (има лесни заобиколни начини; не е сигурност)
+  document.addEventListener('contextmenu', e=>e.preventDefault());
+  // Забрана на някои шорткъти (също лесно се заобикаля)
+  document.addEventListener('keydown', e=>{
+    if ((e.ctrlKey && e.key.toLowerCase()==='u') || (e.ctrlKey && e.shiftKey && e.key.toLowerCase()==='i') || e.key==='F12'){
+      e.preventDefault();
+      alert("Viewing source is disabled.");
+    }
+  });
   </script>
 </body>
 </html>
