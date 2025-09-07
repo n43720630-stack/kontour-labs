@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kontour Labs</title>
+  <meta name="description" content="Kontour Labs - professional 3D printing studio. We craft high-quality parts in PLA, PETG, and ASA. Email us your brief to start." />
+  <meta name="theme-color" content="#0b0f19" />
+  <style>
+    /* ===== Brand System: Futuristic / Minimal ===== */
+    :root{
+      --bg:#0b0f19;            /* deep navy */
+      --panel:#0e1424;         /* panel */
+      --text:#e6ecff;          /* near-white */
+      --muted:#98a3c7;         /* slate */
+      --line:#1a2237;          /* hairline */
+      --a1:#00C2FF;            /* cyan tech */
+      --a2:#FF9F43;            /* amber proto */
+      --a3:#7A88FF;            /* indigo lab */
+      --glow:0 12px 40px rgba(107,182,255,.28);
+      --radius:18px; --radius-sm:12px; --shadow:0 20px 60px rgba(2,8,23,.45);
+      --container:1180px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; background:radial-gradient(1200px 600px at 85% -10%, rgba(122,136,255,.22), transparent 55%), radial-gradient(800px 400px at 10% 10%, rgba(0,194,255,.18), transparent 60%), var(--bg);
+      color:var(--text);
+      font-family:Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      line-height:1.6;
+      overflow-x:hidden;
+    }
+    a{color:inherit; text-decoration:none}
+    img{max-width:100%; display:block}
+    .container{max-width:var(--container); margin-inline:auto; padding:0 20px}
+
+    /* ===== Minimal Nav ===== */
+    header{position:sticky; top:0; z-index:60; backdrop-filter:saturate(160%) blur(10px); background:rgba(11,15,25,.55); border-bottom:1px solid var(--line)}
+    .nav{display:flex; align-items:center; justify-content:space-between; gap:18px; padding:14px 0}
+    .brand{display:flex; align-items:center; gap:.8rem; font-weight:900; letter-spacing:.3px}
+    .logo{width:36px; height:36px; border-radius:12px; display:grid; place-items:center; color:#06101f; box-shadow:var(--glow); background:none; padding:0}
+    .nav a{color:#eaf1ff; font-weight:700; opacity:.9}
+    .nav a:hover{opacity:1}
+
+    /* ===== Page router ===== */
+    main{min-height:70vh}
+    [data-page]{display:none}
+    [data-page].active{display:block}
+
+    /* ===== Hero (segmented headline) ===== */
+    .hero{padding:90px 0 36px}
+    .hero-wrap{display:grid; grid-template-columns:1.08fr .92fr; gap:38px; align-items:center}
+    h1{margin:0 0 12px; font-size:clamp(2.2rem, 6vw, 6rem); font-weight:900; line-height:1.02; letter-spacing:-.02em}
+    .seg{display:inline; cursor:pointer; transition:filter .2s ease}
+    .seg:hover{filter:brightness(1.05)}
+    .seg1{background:linear-gradient(90deg,#cfe3ff, var(--a1)); -webkit-background-clip:text; background-clip:text; color:transparent}
+    .seg2{background:linear-gradient(90deg,#ffd7bf,var(--a2)); -webkit-background-clip:text; background-clip:text; color:transparent}
+    .seg3{background:linear-gradient(90deg,#cfc6ff,var(--a3)); -webkit-background-clip:text; background-clip:text; color:transparent}
+    .lead{color:var(--muted); font-size:clamp(1rem, 1.4vw, 1.2rem)}
+
+    .panel{background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.02)); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); padding:20px}
+
+    /* Sections */
+    section{padding:68px 0}
+    .grid-2{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:20px}
+    .grid-3{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:20px}
+
+    .card{background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02)); border:1px solid var(--line); border-radius:var(--radius); padding:22px; box-shadow:var(--shadow)}
+    .card h3{margin:0 0 6px}
+    .muted{color:var(--muted)}
+
+    /* ===== Materials chips (glow tooltip below; no box) ===== */
+    .chips{display:flex; flex-wrap:wrap; gap:10px; margin-top:10px}
+    .chip{
+      padding:.45rem .75rem;
+      border-radius:999px;
+      font-weight:800;
+      letter-spacing:.2px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.04);
+      position:relative; /* for tooltip positioning */
+    }
+    .chip[data-tip]::after{
+      content:attr(data-tip);
+      position:absolute;
+      left:50%;
+      top:calc(100% + 6px);
+      transform:translate(-50%, 4px);
+      white-space:nowrap;
+      color:#eaf1ff;
+      background:transparent;
+      border:0;
+      padding:0;
+      font-weight:800;
+      font-size:.85rem;
+      letter-spacing:.02em;
+      opacity:0;
+      pointer-events:none;
+      text-shadow:
+        0 0 10px rgba(0,194,255,.65),
+        0 0 18px rgba(122,136,255,.45);
+      transition:opacity .18s ease, transform .18s ease;
+    }
+    .chip[data-tip]:hover::after{
+      opacity:1;
+      transform:translate(-50%, 0);
+    }
+
+    /* Reveal on scroll */
+    .reveal{opacity:0; transform:translateY(16px); transition:opacity .5s ease, transform .5s ease}
+    .reveal.in{opacity:1; transform:none}
+
+    /* Email page */
+    .center{display:grid; place-items:center; text-align:center; min-height:60vh}
+    .big{font-size:clamp(1.6rem, 3.5vw, 3rem); font-weight:900}
+    .cta{display:inline-flex; align-items:center; gap:.6rem; margin-top:14px; padding:.9rem 1.2rem; border-radius:999px; background:linear-gradient(90deg,var(--a1),var(--a3)); color:#06101f; font-weight:900; box-shadow:var(--glow)}
+    .copy{display:inline-flex; align-items:center; gap:.6rem; margin-left:8px; padding:.85rem 1.1rem; border-radius:999px; background:#0f1629; border:1px solid var(--line); color:#eaf1ff; font-weight:800}
+
+    /* Footer */
+    footer{border-top:1px solid var(--line); padding:20px 0; color:#98a3c7}
+
+    /* Cursor blob */
+    .blob{position:fixed; width:320px; height:320px; border-radius:50%; pointer-events:none; left:-160px; top:-160px; filter:blur(40px); mix-blend-mode:screen; opacity:.6; z-index:0;
+      background:radial-gradient(circle at 50% 50%, rgba(122,136,255,.28), rgba(0,194,255,.25) 45%, transparent 65%);
+    }
+
+    /* Responsive */
+    @media (max-width: 980px){
+      .hero-wrap{grid-template-columns:1fr}
+      .grid-2,.grid-3{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+  <div class="blob" aria-hidden="true"></div>
+  <header>
+    <div class="container nav">
+      <a href="#home" class="brand">
+        <span class="logo" aria-hidden="true" style="background:none;padding:0">
+          <!-- KL Monogram -->
+          <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36" aria-hidden="true">
+            <defs>
+              <linearGradient id="kl-g" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#00C2FF"/>
+                <stop offset="1" stop-color="#7A88FF"/>
+              </linearGradient>
+            </defs>
+            <rect width="36" height="36" rx="12" fill="url(#kl-g)"/>
+            <path d="M10 9v18h4v-6.5l5 6.5h5l-6.3-8 6.3-10h-5l-5 8v-8h-4z" fill="#06101f"/>
+          </svg>
+        </span>
+        <span>Kontour Labs</span>
+      </a>
+      <nav style="display:flex; gap:14px; align-items:center">
+        <a href="#home">Home</a>
+        <a href="#home-what">What we do</a>
+        <a href="#home-who">Who we are</a>
+        <a href="#email">Email us</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- ================= HOME ================= -->
+    <section class="container hero" data-page id="home">
+      <div class="hero-wrap">
+        <div class="reveal">
+          <h1 aria-live="polite">
+            <span class="seg seg1" id="seg1" data-variants='["Digital Files.","Precision First.","PLA. PETG. ASA."]'>Digital Files.</span>
+            <span class="seg seg2" id="seg2" data-variants='["Kontour Labs.","Future Craft.","Surface Matters."]'>Kontour Labs.</span>
+            <span class="seg seg3" id="seg3" data-variants='["Built For Precision.","Designed for Speed.","Engineered to Fit."]'>Built For Precision.</span>
+          </h1>
+          <p class="lead">We turn your designs into high-quality parts with a focus on precision, surface, and fit. No friction - just email us your brief and we’ll get you from idea to object.</p>
+          <div class="panel" aria-label="Materials">
+            <strong>Materials we work with:</strong>
+            <div class="chips" role="list">
+              <span class="chip" data-tip="Versatile, clean detail">PLA</span>
+              <span class="chip" data-tip="Tough, Functional">PETG</span>
+              <span class="chip" data-tip="UV-resistant, outdoor">ASA</span>
+            </div>
+          </div>
+        </div>
+        <!-- Right column intentionally left empty -->
+      </div>
+    </section>
+
+    <section class="container" data-page id="home-what">
+      <div class="grid-3">
+        <div class="card reveal">
+          <h3>What we do</h3>
+          <p class="muted">On-demand 3D printing in <strong>PLA, PETG, and ASA</strong>. From one-off prototypes to short series, we deliver consistent quality with dimensional checks on request.</p>
+        </div>
+        <div class="card reveal">
+          <h3>How we work</h3>
+          <p class="muted">Email-first. Share your brief and file links; we advise materials/feasibility, then manufacture and ship. No forms, no portals - just clear guidance.</p>
+        </div>
+        <div class="card reveal">
+          <h3>Finishing</h3>
+          <p class="muted">As-printed or refined: deburr, sand, prime & paint on request. We optimize for fit, surface, and assembly.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="container" data-page id="home-who">
+      <div class="grid-2">
+        <div class="card reveal">
+          <h3>Who we are</h3>
+          <p class="muted">A compact studio of designers and engineers obsessed with precision and craft. We pair reliable machines with rigorous checks so your parts arrive ready to test, fit, and ship.</p>
+        </div>
+        <div class="card reveal">
+          <h3>Why it matters</h3>
+          <p class="muted">You shouldn’t fight slicer settings or hardware. Our job is to translate your intent into physical reality - predictably, quickly, beautifully.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="container" data-page id="home-cta" style="padding-top:20px; padding-bottom:70px">
+      <div class="panel reveal" style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap">
+        <div>
+          <div class="big">Ready when you are.</div>
+          <div class="muted">Email us your brief - we’ll handle the rest.</div>
+        </div>
+        <div>
+          <a class="cta" href="#email">Email us</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= EMAIL PAGE ================= -->
+    <section class="container center" data-page id="email">
+      <div class="reveal">
+        <div class="big" style="margin-bottom:10px">Let’s build your part.</div>
+        <p class="muted" style="max-width:640px; margin-inline:auto">Send us a short description and (optionally) a link to your files. We’ll reply with material guidance (<strong>PLA, PETG, or ASA</strong>), feasibility, and timeline.</p>
+        <p style="margin:16px 0 6px; font-weight:800; letter-spacing:.12em; text-transform:uppercase; color:#cfe3ff">Email</p>
+        <div>
+          <a id="mailto" class="cta" href="mailto:kontourlabs@gmail.com?subject=New%20Project%20—%20Kontour%20Labs&body=Hi%20Kontour%20Labs%2C%0D%0A%0D%0AProject%20overview%3A%20%5Bbrief%5D%0D%0AMaterial%3A%20%5BPLA%20%2F%20PETG%20%2F%20ASA%20%2F%20advise%5D%0D%0AQuantity%3A%20%5B%5D%0D%0ADeadline%3A%20%5B%5D%0D%0AFiles%20(link)%3A%20%5Boptional%5D%0D%0A%0D%0AThanks!">kontourlabs@gmail.com</a>
+          <button class="copy" id="copy">Copy email</button>
+        </div>
+        <div class="muted" style="margin-top:12px">No forms. No accounts. Just email.</div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container" style="display:flex; align-items:center; justify-content:center; gap:16px; flex-wrap:wrap">
+      <a href="#home">Home</a>
+      <span>•</span>
+      <a href="#email">Email us</a>
+    </div>
+  </footer>
+
+  <script>
+    // ===== Simple hash router
+    const ids=['home','home-what','home-who','home-cta','email'];
+    function route(){
+      const hash=(location.hash||'#home').replace('#','');
+      ids.forEach(id=>{
+        const el=document.getElementById(id);
+        if(!el) return;
+        if(hash==='home' && (id==='home' || id==='home-what' || id==='home-who' || id==='home-cta')) el.classList.add('active');
+        else if(hash===id) el.classList.add('active'); else el.classList.remove('active');
+      });
+      window.scrollTo({top:0, behavior:'instant'});
+    }
+    window.addEventListener('hashchange', route); route();
+
+    // ===== Reveal on scroll
+    const io=new IntersectionObserver(entries=>{
+      entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('in'); });
+    },{threshold:.15});
+    document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+    // ===== Cursor blob (parallax follower)
+    const blob=document.querySelector('.blob');
+    let bx=0, by=0, tx=0, ty=0;
+    window.addEventListener('pointermove', e=>{ tx=e.clientX; ty=e.clientY; });
+    function tick(){
+      bx+= (tx - bx) * 0.08;
+      by+= (ty - by) * 0.08;
+      blob.style.transform=`translate3d(${bx}px, ${by}px, 0)`;
+      requestAnimationFrame(tick);
+    }
+    tick();
+
+    // ===== Segmented headline variants (click to cycle)
+    function makeCycler(id){
+      const el=document.getElementById(id);
+      if(!el) return; 
+      const variants=JSON.parse(el.getAttribute('data-variants')||'[]');
+      let i=0; el.addEventListener('click', ()=>{ i=(i+1)%variants.length; el.textContent=variants[i]; });
+    }
+    ['seg1','seg2','seg3'].forEach(makeCycler);
+
+    // ===== Copy email button
+    const copyBtn=document.getElementById('copy');
+    if(copyBtn){
+      copyBtn.addEventListener('click',()=>{
+        const email='kontourlabs@gmail.com';
+        navigator.clipboard.writeText(email).then(()=>{
+          const old=copyBtn.textContent;
+          copyBtn.textContent='Copied!';
+          setTimeout(()=>copyBtn.textContent=old,1200);
+        });
+      });
+    }
+  </script>
+</body>
+</html>
