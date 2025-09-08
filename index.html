@@ -59,17 +59,7 @@
     .card h3{margin:0 0 6px}
     .muted{color:var(--muted)}
 
-    /* Chips with glow tooltips (no box) */
-    .chips{display:flex; flex-wrap:wrap; gap:10px; margin-top:10px}
-    .chip{padding:.45rem .75rem; border-radius:999px; font-weight:800; letter-spacing:.2px; border:1px solid var(--line); background:rgba(255,255,255,.04); position:relative}
-    .chip[data-tip]::after{
-      content:attr(data-tip); position:absolute; left:50%; top:calc(100% + 6px); transform:translate(-50%, 4px);
-      white-space:nowrap; color:#eaf1ff; background:transparent; border:0; padding:0; font-weight:800; font-size:.85rem; letter-spacing:.02em; opacity:0; pointer-events:none;
-      text-shadow:0 0 10px rgba(0,194,255,.65), 0 0 18px rgba(122,136,255,.45);
-      transition:opacity .18s ease, transform .18s ease;
-    }
-    .chip[data-tip]:hover::after{opacity:1; transform:translate(-50%, 0)}
-
+    /* Reveal */
     .reveal{opacity:0; transform:translateY(16px); transition:opacity .5s ease, transform .5s ease}
     .reveal.in{opacity:1; transform:none}
 
@@ -88,6 +78,37 @@
     #printCanvas{width:100%; height:360px; display:block; border-radius:12px}
     .tiny{font-size:.85rem; color:var(--muted); margin-top:8px}
 
+    /* === Dragon + Carousel row === */
+    .gallery-row{
+      display:flex; align-items:center; gap:20px; justify-content:center;
+      max-width:min(980px,94vw); margin:0 auto 16px;
+    }
+    /* PDF embed with PNG fallback */
+    .dragon-embed{ width:clamp(140px,24vw,260px); aspect-ratio:1/1; border:0; display:block; pointer-events:none }
+    .dragon-img{  width:clamp(140px,24vw,260px); display:block; margin:0; border-radius:0 }
+
+    /* Carousel (без CSS анимации; JS движи transform) */
+    .carousel{
+      --gap:16px;
+      flex:1; position:relative; overflow:hidden;
+      -webkit-mask-image: linear-gradient(to right, transparent, black 6%, black 94%, transparent);
+              mask-image: linear-gradient(to right, transparent, black 6%, black 94%, transparent);
+    }
+    .carousel-track{
+      display:flex; align-items:center; gap:var(--gap); will-change:transform;
+      user-select:none; pointer-events:none;
+    }
+    .carousel-track > *{ flex:0 0 auto }
+    .carousel img{
+      width:clamp(120px,16vw,200px); height:auto; display:block;
+      filter:drop-shadow(0 10px 30px rgba(107,182,255,.25));
+    }
+    .carousel:hover .carousel-track{ transition:transform .25s ease } /* за плавно спиране при hover */
+
+    @media (max-width:700px){
+      .gallery-row{ flex-direction:column }
+      .carousel{ width:100% }
+    }
     @media (max-width: 980px){
       .hero-wrap{grid-template-columns:1fr}
       .grid-2,.grid-3{grid-template-columns:1fr}
@@ -192,6 +213,23 @@
     <!-- ================= EMAIL PAGE ================= -->
     <section class="container center" data-page id="email">
       <div class="reveal">
+        <!-- Dragon (PDF с PNG fallback) + JS безкрайна лента до него -->
+        <div class="gallery-row">
+          <object data="dragon.pdf#toolbar=0&navpanes=0&scrollbar=0" type="application/pdf" class="dragon-embed" aria-label="Dragon">
+          </object>
+
+          <div class="carousel" aria-label="Gallery">
+            <div class="carousel-track" id="carouselTrack">
+              <!-- Поставяй САМО веднъж твоите снимки тук; JS ще ги дублира автоматично -->
+              <img src="alien.png"  alt="Alien">
+              <img src="office.png" alt="Office">
+              <img src="build.png"  alt="Build">
+              <img src="wave.png"   alt="Wave">
+              <img src="dragon.png"   alt="Dragon">
+            </div>
+          </div>
+        </div>
+
         <div class="big" style="margin-bottom:10px">Let’s build your part.</div>
         <p class="muted" style="max-width:640px; margin-inline:auto">Send us a short description and (optionally) a link to your files. We’ll reply with material guidance (<strong>PLA, PETG, or ASA</strong>), feasibility, and timeline.</p>
         <p style="margin:16px 0 6px; font-weight:800; letter-spacing:.12em; text-transform:uppercase; color:#cfe3ff">Email</p>
@@ -280,81 +318,56 @@
       }
       resize(); addEventListener('resize', resize);
 
-      // Simple vase profile (surface of revolution): radius over height
-      function radiusAt(t){ // t in [0,1]
-        // base and lip slimmer, belly wider
-        return 22 + 56*Math.sin(Math.PI*t)**1.1;
-      }
+      function radiusAt(t){ return 22 + 56*Math.sin(Math.PI*t)**1.1; }
 
       function draw(){
         const {width:w,height:h} = canvas.getBoundingClientRect();
         ctx.clearRect(0,0,w,h);
 
-        // Panel backdrop glow
         const g=ctx.createLinearGradient(0,0,w,h);
         g.addColorStop(0,'rgba(122,136,255,0.10)');
         g.addColorStop(1,'rgba(0,194,255,0.06)');
         ctx.fillStyle=g; ctx.fillRect(0,0,w,h);
 
-        // Print bed
         const bedY = h - 28, bedH=10, bedW = Math.min(320, w*0.75);
         const bedX = (w-bedW)/2;
-        ctx.fillStyle='rgba(200,220,255,0.06)';
-        ctx.fillRect(bedX, bedY, bedW, bedH);
-        ctx.strokeStyle='rgba(180,200,255,0.15)';
-        ctx.strokeRect(bedX, bedY, bedW, bedH);
+        ctx.fillStyle='rgba(200,220,255,0.06)'; ctx.fillRect(bedX, bedY, bedW, bedH);
+        ctx.strokeStyle='rgba(180,200,255,0.15)'; ctx.strokeRect(bedX, bedY, bedW, bedH);
 
-        // Object params
-        const H = Math.min(260, h - 80);    // height available for print
+        const H = Math.min(260, h - 80);
         const topY = bedY - H - 8;
         const cx = w/2;
-        const layer = 3;                    // layer height px
-        const squish = .18 + .10*Math.cos(angle);  // ellipse vertical radius ratio
+        const layer = 3;
+        const squish = .18 + .10*Math.cos(angle);
 
-        // Silhouette ghost (future shape)
         ctx.beginPath();
         for(let t=0;t<=1.001;t+=0.01){
-          const rx = radiusAt(t);
-          const y = topY + t*H;
+          const rx = radiusAt(t); const y = topY + t*H;
           if(t===0) ctx.moveTo(cx-rx,y);
           ctx.lineTo(cx-rx,y);
         }
         for(let t=1;t>=0;t-=0.01){
-          const rx = radiusAt(t);
-          const y = topY + t*H;
+          const rx = radiusAt(t); const y = topY + t*H;
           ctx.lineTo(cx+rx,y);
         }
         ctx.closePath();
-        ctx.strokeStyle='rgba(180,210,255,0.08)';
-        ctx.lineWidth=1; ctx.stroke();
+        ctx.strokeStyle='rgba(180,210,255,0.08)'; ctx.lineWidth=1; ctx.stroke();
 
-        // Printed height
         const printedH = H * Math.min(progress,1);
         const currentY = topY + printedH;
 
-        // Layers
         for(let y=topY; y<=currentY; y+=layer){
           const t = (y-topY)/H; const rx = radiusAt(t);
           const ry = Math.max(2, rx*squish);
-
-          // fill (slight glow)
           const lg = ctx.createLinearGradient(cx-rx,y, cx+rx,y);
           lg.addColorStop(0, 'rgba(0,194,255,0.10)');
           lg.addColorStop(.5, 'rgba(170,190,255,0.12)');
           lg.addColorStop(1, 'rgba(122,136,255,0.10)');
           ctx.fillStyle = lg;
-
-          ctx.beginPath();
-          ctx.ellipse(cx, y, rx, ry, 0, 0, Math.PI*2);
-          ctx.fill();
-
-          // layer line
-          ctx.strokeStyle='rgba(120,200,255,0.25)';
-          ctx.lineWidth=1;
-          ctx.stroke();
+          ctx.beginPath(); ctx.ellipse(cx, y, rx, ry, 0, 0, Math.PI*2); ctx.fill();
+          ctx.strokeStyle='rgba(120,200,255,0.25)'; ctx.lineWidth=1; ctx.stroke();
         }
 
-        // Nozzle + filament at current layer
         if(progress<1){
           const t = (currentY-topY)/H;
           const rx = radiusAt(t)*0.88;
@@ -363,72 +376,110 @@
           const nx = cx + Math.sin(time*2.2)*rx;
           const ny = currentY;
 
-          // filament drop
-          ctx.strokeStyle='rgba(0,194,255,0.6)';
-          ctx.lineWidth=2; ctx.beginPath();
-          ctx.moveTo(nx, ny-10);
-          ctx.lineTo(nx, ny-ry);
-          ctx.stroke();
+          ctx.strokeStyle='rgba(0,194,255,0.6)'; ctx.lineWidth=2; ctx.beginPath();
+          ctx.moveTo(nx, ny-10); ctx.lineTo(nx, ny-ry); ctx.stroke();
 
-          // nozzle head
-          ctx.fillStyle='rgba(200,230,255,0.12)';
-          ctx.strokeStyle='rgba(140,200,255,0.6)';
-          ctx.lineWidth=2;
-          ctx.beginPath();
-          ctx.roundRect(nx-10, ny-22, 20, 12, 4);
-          ctx.fill(); ctx.stroke();
+          ctx.fillStyle='rgba(200,230,255,0.12)'; ctx.strokeStyle='rgba(140,200,255,0.6)';
+          ctx.lineWidth=2; ctx.beginPath(); ctx.roundRect(nx-10, ny-22, 20, 12, 4); ctx.fill(); ctx.stroke();
 
-          // little tip
           ctx.beginPath();
           ctx.moveTo(nx-4, ny-10); ctx.lineTo(nx+4, ny-10); ctx.lineTo(nx, ny-4); ctx.closePath();
           ctx.fillStyle='rgba(140,200,255,0.5)'; ctx.fill();
         }
 
-        // Soft vignette
         const vg = ctx.createRadialGradient(w/2,h/2,0,w/2,h/2,Math.max(w,h)/1.2);
-        vg.addColorStop(0,'rgba(0,0,0,0)');
-        vg.addColorStop(1,'rgba(0,0,0,0.25)');
+        vg.addColorStop(0,'rgba(0,0,0,0)'); vg.addColorStop(1,'rgba(0,0,0,0.25)');
         ctx.fillStyle=vg; ctx.fillRect(0,0,w,h);
       }
 
       function step(now){
         const dt = Math.min(1, (now - t0)/1000); t0 = now;
         if(playing){
-          // speed in %/s
-          const speed = 0.22; // 22% per second
-          progress += speed*dt;
-          if(progress>=1.08){ // small overshoot then reset
-            progress = 0;
-          }
+          const speed = 0.22; progress += speed*dt;
+          if(progress>=1.08){ progress = 0; }
         }
-        draw();
-        requestAnimationFrame(step);
+        draw(); requestAnimationFrame(step);
       }
       requestAnimationFrame(step);
 
-      // Interactions
       canvas.addEventListener('click', ()=>{ playing=!playing; });
       canvas.addEventListener('pointerdown', e=>{ drag=true; startX=e.clientX; startAngle=angle; canvas.setPointerCapture(e.pointerId); });
       canvas.addEventListener('pointermove', e=>{
-        if(!drag) return;
-        const dx = e.clientX - startX;
+        if(!drag) return; const dx = e.clientX - startX;
         angle = Math.max(-0.6, Math.min(0.9, startAngle + dx/400));
       });
       canvas.addEventListener('pointerup', e=>{ drag=false; canvas.releasePointerCapture(e.pointerId); });
 
-      // Resize observer to keep crisp
       new ResizeObserver(resize).observe(canvas);
+    })();
+
+    // ===== JS Infinite Carousel (работи винаги)
+    (function(){
+      const track = document.getElementById('carouselTrack');
+      if(!track) return;
+
+      // дублирай елементите за безшевна лента
+      const originals = Array.from(track.children);
+      originals.forEach(node => track.appendChild(node.cloneNode(true)));
+
+      let x = 0;
+      let last = performance.now();
+      let halfWidth = 0;
+      let running = true;
+      const speed = 200; // пиксела в секунда (смени ако искаш)
+
+      function measure(){
+        // половината е ширината на оригиналния сет (след дублиране total/2)
+        halfWidth = track.scrollWidth / 2;
+      }
+
+      function step(t){
+        if(running){
+          const dt = (t - last) / 1000;
+          x -= speed * dt;
+          // цикъл
+          if (Math.abs(x) >= halfWidth) {
+            x += halfWidth * Math.sign(x) * -1; // запази остатъка, без „подскачане“
+          }
+          track.style.transform = `translateX(${x}px)`;
+        }
+        last = t;
+        requestAnimationFrame(step);
+      }
+
+      // изчакай изображенията да се измерят коректно
+      function whenImagesReady(cb){
+        const imgs = track.querySelectorAll('img');
+        let left = imgs.length;
+        if(left === 0) return cb();
+        const done = ()=>{ if(--left===0) cb(); };
+        imgs.forEach(img=>{
+          if(img.complete) done();
+          else { img.addEventListener('load', done, {once:true}); img.addEventListener('error', done, {once:true}); }
+        });
+      }
+
+      whenImagesReady(()=>{
+        measure();
+        requestAnimationFrame(step);
+      });
+
+      // преизчислявай при resize
+      new ResizeObserver(()=>{ measure(); }).observe(track);
+
+      // пауза при hover върху контейнера
+      const container = track.parentElement;
+      container.addEventListener('mouseenter', ()=>{ running=false; });
+      container.addEventListener('mouseleave', ()=>{ running=true; last=performance.now(); });
     })();
   </script>
 
   <script>
-  // Забрана на десен клик (има лесни заобиколни начини; не е сигурност)
+  // Защити (по желание)
   document.addEventListener('contextmenu', e=>e.preventDefault());
-  // Забрана на някои шорткъти (също лесно се заобикаля)
   document.addEventListener('keydown', e=>{
     if ((e.ctrlKey && e.key.toLowerCase()==='u') || (e.ctrlKey && e.shiftKey && e.key.toLowerCase()==='i') || e.key==='F12'){
-      e.preventDefault();
-      alert("Viewing source is disabled.");
+      e.preventDefault(); alert("Viewing source is disabled.");
     }
   });
   </script>
